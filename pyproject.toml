@@ -1,0 +1,99 @@
+[tool.poetry]
+name = "tugboat-docker"
+version = "0.7.0"
+description = "Pythonic Docker containers"
+authors = ["Tom Watson <tomwatson@microsoft.com>"]
+packages = [{include = "tugboat", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.6.2"
+anyio = ">=2.2.0,<4"
+async-generator = "^1.10"
+attrs = "^21.4.0"
+
+[tool.poetry.dev-dependencies]
+furo = "^2021.11.23"
+mock = "^4.0.3"
+mypy = "^0.910"
+pygments-onehalf = "^0.1.1"
+pytest = "^6.2.5"
+pytest-cov = "^3.0.0"
+pytest-timeout = "^1.4.2"
+python-static-checks = "^1.0.1"
+requests = "^2.27.1"
+sphinx = "^4.3.2"
+sphinx-copybutton = "^0.4.0"
+trio = "^0.19.0"
+trio-typing = "^0.5.1"
+
+# Type stubs.
+types-mock = "^0.1.5"
+types-requests = "^2.27.30"
+types-toml = "^0.1.5"
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint.messages_control]
+disable = [
+    "R",
+    "C",
+    # We don't care about performance and fstrings are more readable
+    "logging-fstring-interpolation",
+    # mypy does a better job of catching nonexistent names
+    "no-member",
+    "no-name-in-module",
+    # pylint doesn't understand async_generator.asynccontextmanager
+    "not-async-context-manager",
+]
+
+[tool.pylint.reports]
+output-format = "colorized"
+score = "n"
+
+[tool.pytest.ini_options]
+addopts = [
+    "-v",
+    "--doctest-glob=*.md",
+    "--doctest-glob=*.rst",
+    "--doctest-glob=*.rst.inc",
+    "--doctest-modules",
+    "--ignore=docs/conf.py",
+    "--strict-markers",
+    "--cov=tugboat",
+    "--cov-branch",
+    "--cov-report=term-missing",
+    "--cov-fail-under=100",
+]
+doctest_optionflags = "ELLIPSIS"
+testpaths = ["src", "test", "docs", "README.md"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')"
+]
+timeout = 60
+
+[tool.mypy]
+files = ["src", "test", "docs"]
+plugins = ["trio_typing.plugin"]
+
+# Untyped definitions and calls
+check_untyped_defs = true
+disallow_untyped_defs = true
+
+# Require type parameters of generic types to be explicitly specified. The
+# `Any` type may be used where a more specific type is not appropriate.
+disallow_any_generics = true
+
+# Disable implicit re-exporting of names imported by a module. Names may be
+# explicitly exported using `__all__`.
+implicit_reexport = false
+
+# None and Optional handling
+no_implicit_optional = true
+
+# Error codes can be used to write more specific `type: ignore` comments.
+show_error_codes = true
+
+[build-system]
+requires = ["poetry_core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
